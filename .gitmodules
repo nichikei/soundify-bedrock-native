@@ -1,0 +1,3 @@
+[submodule "bedrock/third_party/Latite"]
+	path = bedrock/third_party/Latite
+	url = https://github.com/LatiteClient/Latite.git
