@@ -815,8 +815,10 @@ void SoundifyModule::onRenderLayer(Event& event) {
 void SoundifyModule::onTick(Event& event) {
     const auto started = soundify::SoundEngine::Clock::now();
     std::lock_guard lock(mutex_);
+    // Tick runs while the module is off only to keep the license fresh; `.toggle Soundify`
+    // must silence hotbar, inventory, movement and health sounds too.
     updateAuthentication();
-    if (!supported()) { reset(); return; }
+    if (!isEnabled() || !supported()) { reset(); return; }
     auto* instance = SDK::ClientInstance::get();
     auto* player = instance ? instance->getLocalPlayer() : nullptr;
     if (!player) { reset(); return; }
