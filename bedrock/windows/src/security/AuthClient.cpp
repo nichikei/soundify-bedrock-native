@@ -162,6 +162,18 @@ std::wstring endpoint(const std::wstring& base, std::wstring_view path) {
     return base + std::wstring(path);
 }
 
+// The server limits fields with JavaScript's String.length (UTF-16 code units), not UTF-8 bytes:
+// a Vietnamese password can be well under its 128-unit limit and still exceed 128 bytes.
+std::size_t utf16Length(std::string_view utf8) {
+    std::size_t units{};
+    for (const auto ch : utf8) {
+        const auto byte = static_cast<unsigned char>(ch);
+        if ((byte & 0xC0) == 0x80) continue;   // continuation byte
+        units += (byte & 0xF8) == 0xF0 ? 2 : 1;  // 4-byte sequences need a surrogate pair
+    }
+    return units;
+}
+
 int milliseconds(std::chrono::milliseconds value) {
     return static_cast<int>(std::clamp<std::chrono::milliseconds::rep>(value.count(), 1, std::numeric_limits<int>::max()));
 }
@@ -287,7 +299,7 @@ AuthResult AuthClient::login(std::string username, std::string password) {
         secureClear(password);
         return {AuthStatus::Rejected, "Enter username and password"};
     }
-    if (username.size() > 64 || password.size() > 128) {
+    if (utf16Length(username) > 64 || utf16Length(password) > 128) {
         secureClear(password);
         return {AuthStatus::Rejected, "Username or password is too long"};
     }

@@ -14,9 +14,9 @@
 
 namespace soundify::security {
 
-inline constexpr std::string_view BedrockClientVersion = "0.4.1";
+inline constexpr std::string_view BedrockClientVersion = "0.4.2";
 // Store catalog entry for Bedrock: game_version "bedrock", product_version = client version.
-inline constexpr std::string_view AuthRelease = "0.4.1+bedrock";
+inline constexpr std::string_view AuthRelease = "0.4.2+bedrock";
 inline constexpr std::string_view AuthClientName = "soundify-reborn-bedrock";
 // Same device id as the Java builds of 2026-10 (see MachineId.hpp).
 inline constexpr int HwidScheme = 2;

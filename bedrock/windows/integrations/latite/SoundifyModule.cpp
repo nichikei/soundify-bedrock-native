@@ -235,8 +235,12 @@ SoundifyModule::SoundifyModule()
     listen<TickEvent>(&SoundifyModule::onTick, true);
     listen<LeaveGameEvent>(&SoundifyModule::onLeave, true);
     startAuthCheck();
-    std::error_code ignored;
-    if (!std::filesystem::exists(soundify::security::defaultTokenPath(), ignored)) launchLoginApp();
+    try {
+        std::error_code ignored;
+        if (!std::filesystem::exists(soundify::security::defaultTokenPath(), ignored)) launchLoginApp();
+    } catch (const std::exception&) {
+        // No LOCALAPPDATA: the license check reports it; never break Latite's start-up.
+    }
     // Soundify is the product's primary module. New installs should work immediately;
     // Latite's saved configuration can still apply the user's later choice.
     setEnabled(true);
